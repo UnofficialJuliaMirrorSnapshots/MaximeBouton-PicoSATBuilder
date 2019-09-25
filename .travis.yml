@@ -1,0 +1,39 @@
+language: julia
+os:
+  - linux
+julia:
+  - 1.0
+notifications:
+  email: false
+git:
+  depth: 99999999
+cache:
+  timeout: 1000
+  directories:
+    - downloads
+env:
+  global:
+    - BINARYBUILDER_DOWNLOADS_CACHE=downloads
+    - BINARYBUILDER_AUTOMATIC_APPLE=true
+sudo: required
+
+# Before anything else, get the latest versions of things
+before_script:
+  - julia -e 'using Pkg; pkg"add BinaryProvider"; pkg"add BinaryBuilder#master"; Pkg.build()'
+
+script:
+  - julia build_tarballs.jl
+
+
+deploy:
+    provider: releases
+    api_key:
+        # Note; this api_key is only valid for MaximeBouton/PicoSATBuilder; you need
+        # to make your own: https://docs.travis-ci.com/user/deployment/releases/
+        secure: vlDq41CihOD9oJDP+EVMcPUhertx55ua2xtZUOqbKrmk86/eyb+yGw+HOEe3Hug7abgfAlQ06TWl5HNISZEFaJjhV+w6jJpg9GevFaOja2/zagYExTsxtq/Tx6L1sIkOd3YpIJ0gEEjo1o1POqnA3st1gBlr4rMJ6F4HMSU/eJSbiDPEuu6au5OGCuXS3YwxTVPYO1ZzpDiqf6eEOd2Hukc03vFBeaZWM+SnvuQPBtZpR6gJwDwH2RUznpuJKvcM/IYP1N9UNmb6mqQvdF2U86rp4Mb+wfEbeR2X5ZsH5j+FJWgrIJZ8NnuV8nBXHcFi/8VLJz+RutuAoGWGcA3is7O8dx6Aclv6JkOMZN83KBb9vA4vg1T+sdt6ebHW68n/OYQXcHo5xVQTmAmgky7xyXDCGCfUkJPA6fzHOsCCIMydY0XhVtzn+NN2Ej0l2JtqVyzKkgyIIeAvy0rrv/2xaLE42xeH/a3/akwtXBVYIHefs6F3ukrCXhhHuCmkJbZLrPeK6Jo+Cj/xgFC0Da57iJ/JJph4AtlecAAc+MS8rHqyNmlnYZ0t9N/F9ROJC2AQ68rkE06BwoLYrCBxt+ENhL2BWVXiXIco6VI94MkIRF5S55v/JdTApBwBEm97weaT4ytyFsADlIrQGCgMCCWTi2nnppPSB6htLaZR9cxvuo0=
+    file_glob: true
+    file: products/*
+    skip_cleanup: true
+    on:
+        repo: MaximeBouton/PicoSATBuilder
+        tags: true
